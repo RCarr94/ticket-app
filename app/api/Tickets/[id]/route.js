@@ -26,8 +26,8 @@ export async function DELETE(req, { params }) {
 export async function PUT(req, { params }) {
   try {
     const { id } = params;
-    const body = await req.json()
-    const ticketData = body.formData
+    const body = await req.json();
+    const ticketData = body.formData;
 
     const updateTicketData = await Ticket.findByIdAndUpdate(id, {
       ...ticketData,

@@ -1,51 +1,10 @@
 'use client';
-
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function TicketForm({ ticket }) {
   const EDITMODE = ticket._id === 'new' ? false : true;
   const router = useRouter();
-
-  const handleChange = (evt) => {
-    const value = evt.target.value;
-    const name = evt.target.name;
-
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (evt) => {
-    evt.preventDefault();
-
-    if (EDITMODE) {
-      const res = await fetch(`/api/Tickets/${ticket._id}`, {
-        method: 'PUT',
-        body: JSON.stringify({ formData }),
-        'content-type': 'application/json',
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to update ticket');
-      }
-    } else {
-      const res = await fetch('/api/Tickets', {
-        method: 'POST',
-        body: JSON.stringify({ formData }),
-        'content-type': 'application/json',
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to create ticket');
-      }
-    }
-
-    router.refresh();
-    router.push('/');
-  };
-
   const startingTicketData = {
     title: '',
     description: '',
@@ -65,6 +24,48 @@ export default function TicketForm({ ticket }) {
   }
 
   const [formData, setFormData] = useState(startingTicketData);
+
+  const handleChange = (evt) => {
+    const value = evt.target.value;
+    const name = evt.target.name;
+
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
+
+    if (EDITMODE) {
+      const res = await fetch(`/api/Tickets/${ticket._id}`, {
+        method: 'PUT',
+        headers: {
+          "Content-type": 'application/json',
+        },
+        body: JSON.stringify({ formData }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to update ticket');
+      }
+    } else {
+      const res = await fetch('/api/Tickets', {
+        method: 'POST',
+        body: JSON.stringify({ formData }),
+        'Content-type': 'application/json',
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to create ticket');
+      }
+    }
+
+    router.refresh();
+    router.push('/');
+  };
+
 
   return (
     <div className="flex justify-center">
@@ -109,4 +110,4 @@ export default function TicketForm({ ticket }) {
       </form>
     </div>
   );
-}
+};
