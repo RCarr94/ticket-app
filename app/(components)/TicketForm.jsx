@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function TicketForm({ ticket }) {
-
   const EDITMODE = ticket._id === 'new' ? false : true;
   const router = useRouter();
 
@@ -20,18 +19,31 @@ export default function TicketForm({ ticket }) {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-    const res = await fetch("/api/Tickets", {
-      method: "POST",
-      body: JSON.stringify({formData}),
-      "content-type": "application/json"
-  })
 
-  if (!res.ok) {
-    throw new Error("Failed to create ticket")
-  }
+    if (EDITMODE) {
+      const res = await fetch(`/api/Tickets/${ticket._id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ formData }),
+        'content-type': 'application/json',
+      });
 
-  router.refresh()
-  router.push("/")
+      if (!res.ok) {
+        throw new Error('Failed to update ticket');
+      }
+    } else {
+      const res = await fetch('/api/Tickets', {
+        method: 'POST',
+        body: JSON.stringify({ formData }),
+        'content-type': 'application/json',
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to create ticket');
+      }
+    }
+
+    router.refresh();
+    router.push('/');
   };
 
   const startingTicketData = {
